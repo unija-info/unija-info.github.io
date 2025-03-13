@@ -3,58 +3,666 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Campus Map</title>
+    <title>Campus Interactive Map</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.css" />
+    
+    <!-- Search and sidebar CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-sidebar-v2/3.2.3/css/leaflet-sidebar.min.css" />
+    
     <style>
-        body { display: flex; font-family: Arial, sans-serif; }
-        #sidebar { width: 250px; padding: 10px; background: #f4f4f4; }
-        #map-container { flex: 1; text-align: center; }
-        .hidden { display: none; }
-        .highlight { stroke: red; stroke-width: 2px; }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+        
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+        
+        .search-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        #search-input {
+            padding: 8px;
+            width: 250px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .search-results {
+            background: white;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            border: 1px solid #ddd;
+        }
+        
+        .search-result-item {
+            padding: 8px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .search-result-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .location-popup {
+            max-width: 300px;
+        }
+        
+        .location-popup h3 {
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+        
+        .building-highlight {
+            fill: #4285F4;
+            fill-opacity: 0.5;
+            transition: fill-opacity 0.3s;
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            font-size: 24px;
+        }
+        
+        .config-panel {
+            position: absolute;
+            top: 60px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: none;
+        }
+        
+        .config-panel input {
+            width: 250px;
+            margin-bottom: 5px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .config-panel button {
+            padding: 8px 15px;
+            background: #4285F4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .config-toggle {
+            position: absolute;
+            top: 60px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <div id="sidebar">
-        <h2>Campus Map</h2>
-        <input type="text" id="search" placeholder="Search location...">
-        <h3>Legend</h3>
-        <button onclick="filterCategory('academic')">Academic</button>
-        <button onclick="filterCategory('food')">Food</button>
-        <button onclick="filterCategory('sports')">Sports</button>
-        <h3>Locations</h3>
-        <ul id="location-list"></ul>
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="loading-overlay">Loading campus map...</div>
+    
+    <!-- Map container -->
+    <div id="map"></div>
+    
+    <!-- Sidebar -->
+    <div id="sidebar" class="leaflet-sidebar collapsed">
+        <div class="leaflet-sidebar-tabs">
+            <ul role="tablist">
+                <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+                <li><a href="#info" role="tab"><i class="fa fa-info-circle"></i></a></li>
+            </ul>
+        </div>
+        <div class="leaflet-sidebar-content">
+            <div class="leaflet-sidebar-pane" id="home">
+                <h1 class="leaflet-sidebar-header">
+                    Campus Locations
+                    <span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+                <div id="location-list"></div>
+            </div>
+            <div class="leaflet-sidebar-pane" id="info">
+                <h1 class="leaflet-sidebar-header">
+                    About
+                    <span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+                <p>Campus Map Information</p>
+            </div>
+        </div>
     </div>
-    <div id="map-container">
-        <object id="campus-map" type="image/svg+xml" data="https://unija-info.github.io/map/map.svg"></object>
+    
+    <!-- Search container -->
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Search locations...">
+        <div class="search-results" id="search-results"></div>
     </div>
+    
+    <!-- Config toggle button -->
+    <div class="config-toggle" id="config-toggle">⚙️ Settings</div>
+    
+    <!-- Configuration panel -->
+    <div class="config-panel" id="config-panel">
+        <h3>Map Configuration</h3>
+        <input type="text" id="svg-url" placeholder="SVG URL (e.g., https://example.com/map.svg)">
+        <input type="text" id="sheet-id" placeholder="Google Sheet ID">
+        <button id="apply-config">Apply</button>
+    </div>
+    
+    <!-- Leaflet JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js"></script>
+    
+    <!-- Sidebar JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-sidebar-v2/3.2.3/js/leaflet-sidebar.min.js"></script>
+    
+    <!-- Font Awesome for icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    
     <script>
-        document.getElementById("campus-map").addEventListener("load", function() {
-            let svgDoc = this.contentDocument;
-            let locations = svgDoc.querySelectorAll(".location");
-            
-            locations.forEach(el => {
-                el.addEventListener("click", () => highlight(el));
-            });
-
-            document.getElementById("search").addEventListener("input", function() {
-                let searchValue = this.value.toLowerCase();
-                locations.forEach(el => {
-                    el.classList.toggle("hidden", !el.dataset.name.toLowerCase().includes(searchValue));
-                });
-            });
-        });
-
-        function highlight(element) {
-            let svgDoc = document.getElementById("campus-map").contentDocument;
-            svgDoc.querySelectorAll(".location").forEach(el => el.classList.remove("highlight"));
-            element.classList.add("highlight");
+        // Global variables
+        let map;
+        let locationData = [];
+        let sidebar;
+        let svgOverlay;
+        
+        // Default configuration
+        let config = {
+            svgUrl: 'https://unija-info.github.io/map/map.svg',  // Default local SVG path
+            sheetId: '1GJ_UQJSMQkQ7sqAVgiiIaeY9y_04mX6SLFL1l9nf21Q'   // Default Sheet ID
+        };
+        
+        // Try to load saved configuration from localStorage
+        try {
+            const savedConfig = localStorage.getItem('campusMapConfig');
+            if (savedConfig) {
+                config = JSON.parse(savedConfig);
+                
+                // Update input fields with saved values
+                setTimeout(() => {
+                    document.getElementById('svg-url').value = config.svgUrl || '';
+                    document.getElementById('sheet-id').value = config.sheetId || '';
+                }, 100);
+            }
+        } catch (e) {
+            console.error('Error loading saved configuration:', e);
         }
-
-        function filterCategory(category) {
-            let svgDoc = document.getElementById("campus-map").contentDocument;
-            let locations = svgDoc.querySelectorAll(".location");
-            locations.forEach(el => {
-                el.classList.toggle("hidden", !el.classList.contains(category));
+        
+        // When page loads, fetch data then initialize map
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize configuration panel
+            initConfigPanel();
+            
+            // Start loading data
+            loadGoogleSheetsData();
+        });
+        
+        // Initialize configuration panel
+        function initConfigPanel() {
+            const configToggle = document.getElementById('config-toggle');
+            const configPanel = document.getElementById('config-panel');
+            const applyButton = document.getElementById('apply-config');
+            
+            // Toggle config panel
+            configToggle.addEventListener('click', () => {
+                configPanel.style.display = configPanel.style.display === 'block' ? 'none' : 'block';
             });
+            
+            // Apply configuration
+            applyButton.addEventListener('click', () => {
+                const svgUrl = document.getElementById('svg-url').value.trim();
+                const sheetId = document.getElementById('sheet-id').value.trim();
+                
+                if (svgUrl) {
+                    config.svgUrl = svgUrl;
+                }
+                
+                if (sheetId) {
+                    config.sheetId = sheetId;
+                }
+                
+                // Save configuration to localStorage
+                try {
+                    localStorage.setItem('campusMapConfig', JSON.stringify(config));
+                } catch (e) {
+                    console.error('Error saving configuration:', e);
+                }
+                
+                // Reload data and map
+                document.getElementById('loading-overlay').style.display = 'flex';
+                document.getElementById('loading-overlay').textContent = 'Applying new configuration...';
+                
+                // Remove existing map if any
+                if (map) {
+                    map.remove();
+                }
+                
+                // Reload data with new configuration
+                loadGoogleSheetsData();
+                
+                // Hide config panel
+                configPanel.style.display = 'none';
+            });
+            
+            // Update input fields with current values
+            document.getElementById('svg-url').value = config.svgUrl || '';
+            document.getElementById('sheet-id').value = config.sheetId || '';
+        }
+        
+        // Function to load data from Google Sheets as JSON
+        function loadGoogleSheetsData() {
+            // Show loading overlay
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.getElementById('loading-overlay').textContent = 'Loading location data...';
+            
+            // Google Sheets URL with JSON parameter
+            const sheetsUrl = `https://docs.google.com/spreadsheets/d/${config.sheetId}/gviz/tq?tqx=out:json`;
+            
+            fetch(sheetsUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error ${response.status}`);
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    try {
+                        // Google returns JSON with some extra characters that need to be removed
+                        // Extract the JSON object from the response
+                        const jsonStart = data.indexOf('{');
+                        const jsonEnd = data.lastIndexOf('}') + 1;
+                        
+                        if (jsonStart === -1 || jsonEnd === 0) {
+                            throw new Error('Invalid data format received from Google Sheets');
+                        }
+                        
+                        const jsonString = data.substring(jsonStart, jsonEnd);
+                        const jsonData = JSON.parse(jsonString);
+                        
+                        // Check if we have valid table data
+                        if (!jsonData.table || !jsonData.table.rows) {
+                            throw new Error('No valid data found in Google Sheet');
+                        }
+                        
+                        // Process the data
+                        const rows = jsonData.table.rows;
+                        locationData = rows.map((row, index) => {
+                            const cells = row.c || [];
+                            return {
+                                id: `building-${cells[0] && cells[0].v ? cells[0].v : index}`, // Location number as ID
+                                number: cells[0] && cells[0].v ? cells[0].v : '',              // Location number
+                                name: cells[1] && cells[1].v ? cells[1].v : '',                // Location name
+                                description: cells[2] && cells[2].v ? cells[2].v : '',         // Description
+                                x: cells[3] && cells[3].v ? parseFloat(cells[3].v) : 0,        // X coordinate
+                                y: cells[4] && cells[4].v ? parseFloat(cells[4].v) : 0         // Y coordinate
+                            };
+                        });
+                        
+                        // Initialize map with the loaded data
+                        initializeMapWithData();
+                    } catch (error) {
+                        console.error('Error parsing Google Sheets data:', error);
+                        document.getElementById('loading-overlay').innerHTML = 
+                            `Error parsing data: ${error.message}<br>Please check that your Google Sheet is properly formatted.`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading data from Google Sheets:', error);
+                    document.getElementById('loading-overlay').innerHTML = 
+                        `Error loading data: ${error.message}<br>Please check settings and try again.`;
+                });
+        }
+        
+        // Initialize map with the loaded data
+        function initializeMapWithData() {
+            document.getElementById('loading-overlay').textContent = 'Loading map...';
+            
+            // Initialize map
+            map = L.map('map', {
+                crs: L.CRS.Simple,
+                minZoom: -1,
+                maxZoom: 3
+            });
+            
+            // SVG dimensions (initially set to default, will be updated when SVG loads)
+            let svgWidth = 1000;
+            let svgHeight = 800;
+            
+            // Calculate bounds based on SVG dimensions
+            let bounds = [[0, 0], [svgHeight, svgWidth]];
+            map.fitBounds(bounds);
+            
+            // Load and display SVG map
+            fetch(config.svgUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error ${response.status}`);
+                    }
+                    return response.text();
+                })
+                .then(svgData => {
+                    try {
+                        // Check if SVG data is valid
+                        if (!svgData || svgData.trim() === '') {
+                            throw new Error('Empty SVG data received');
+                        }
+                        
+                        // Parse SVG to get dimensions
+                        const parser = new DOMParser();
+                        const svgDoc = parser.parseFromString(svgData, "image/svg+xml");
+                        
+                        // Check for parsing errors
+                        const parserError = svgDoc.querySelector('parsererror');
+                        if (parserError) {
+                            throw new Error('SVG parsing error: Invalid SVG format');
+                        }
+                        
+                        const svgElement = svgDoc.documentElement;
+                        if (!svgElement || svgElement.nodeName !== 'svg') {
+                            throw new Error('Invalid SVG: Root element is not <svg>');
+                        }
+                        
+                        // Try to get SVG dimensions - safer approach
+                        // First try viewBox
+                        const viewBox = svgElement.getAttribute('viewBox');
+                        if (viewBox) {
+                            const viewBoxValues = viewBox.split(/\s+/).map(Number);
+                            if (viewBoxValues.length >= 4) {
+                                svgWidth = viewBoxValues[2];
+                                svgHeight = viewBoxValues[3];
+                            }
+                        } 
+                        // If no viewBox, try width/height attributes
+                        else {
+                            const width = svgElement.getAttribute('width');
+                            const height = svgElement.getAttribute('height');
+                            
+                            if (width && height) {
+                                // Handle potential units (px, etc)
+                                const widthValue = width.toString().replace(/[^0-9.]/g, '');
+                                const heightValue = height.toString().replace(/[^0-9.]/g, '');
+                                
+                                svgWidth = parseFloat(widthValue) || svgWidth;
+                                svgHeight = parseFloat(heightValue) || svgHeight;
+                            }
+                        }
+                        
+                        bounds = [[0, 0], [svgHeight, svgWidth]];
+                        map.fitBounds(bounds);
+                        
+                        // Create SVG overlay
+                        if (svgOverlay) {
+                            map.removeLayer(svgOverlay);
+                        }
+                        
+                        svgOverlay = L.svgOverlay(svgData, bounds, {
+                            interactive: true
+                        }).addTo(map);
+                        
+                        // Get SVG element - wait a short time to ensure the SVG is fully loaded in the DOM
+                        setTimeout(() => {
+                            try {
+                                const overlayElement = svgOverlay.getElement();
+                                
+                                // Make buildings interactive
+                                if (overlayElement) {
+                                    locationData.forEach(location => {
+                                        if (!location.id) {
+                                            console.warn(`Location is missing ID:`, location);
+                                            return;
+                                        }
+                                        
+                                        const buildingElement = overlayElement.getElementById(location.id);
+                                        if (buildingElement) {
+                                            // Add event listeners
+                                            buildingElement.addEventListener('mouseover', () => {
+                                                buildingElement.classList.add('building-highlight');
+                                            });
+                                            
+                                            buildingElement.addEventListener('mouseout', () => {
+                                                buildingElement.classList.remove('building-highlight');
+                                            });
+                                            
+                                            buildingElement.addEventListener('click', () => {
+                                                showLocationInfo(location);
+                                            });
+                                        } else {
+                                            console.warn(`Building element with ID ${location.id} not found in SVG`);
+                                        }
+                                    });
+                                } else {
+                                    console.warn('SVG overlay element is not accessible');
+                                }
+                                
+                                // Initialize sidebar
+                                initSidebar();
+                                
+                                // Initialize search functionality
+                                initSearch();
+                                
+                                // Remove loading overlay
+                                document.getElementById('loading-overlay').style.display = 'none';
+                            } catch (error) {
+                                console.error('Error accessing SVG elements:', error);
+                                document.getElementById('loading-overlay').innerHTML = 
+                                    `Error accessing SVG elements: ${error.message}<br>Please check that your SVG has the required elements with proper IDs.`;
+                            }
+                        }, 200); // Short delay to ensure SVG is fully loaded in DOM
+                    } catch (error) {
+                        console.error('Error processing SVG:', error);
+                        document.getElementById('loading-overlay').innerHTML = 
+                            `Error processing SVG: ${error.message}<br>Please check that your SVG is valid.`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading SVG:', error);
+                    document.getElementById('loading-overlay').innerHTML = 
+                        `Error loading SVG map: ${error.message}<br>Please check the SVG URL in settings.`;
+                });
+        }
+        
+        // Initialize sidebar
+        function initSidebar() {
+            try {
+                // Create sidebar
+                sidebar = L.control.sidebar({
+                    autopan: true,
+                    closeButton: true,
+                    container: 'sidebar',
+                    position: 'left'
+                }).addTo(map);
+                
+                // Populate location list
+                const locationList = document.getElementById('location-list');
+                if (locationList) {
+                    locationList.innerHTML = ''; // Clear existing items
+                    
+                    // Sort locations alphabetically by name
+                    const sortedLocations = [...locationData].sort((a, b) => {
+                        if (!a.name) return 1;
+                        if (!b.name) return -1;
+                        return a.name.localeCompare(b.name);
+                    });
+                    
+                    if (sortedLocations.length === 0) {
+                        const noLocations = document.createElement('div');
+                        noLocations.className = 'search-result-item';
+                        noLocations.textContent = 'No locations found';
+                        locationList.appendChild(noLocations);
+                    } else {
+                        sortedLocations.forEach(location => {
+                            const item = document.createElement('div');
+                            item.className = 'search-result-item';
+                            item.textContent = `${location.number || 'N/A'}: ${location.name || 'Unnamed'}`;
+                            item.addEventListener('click', () => {
+                                showLocationInfo(location);
+                                sidebar.close();
+                            });
+                            locationList.appendChild(item);
+                        });
+                    }
+                    
+                    // Open sidebar initially
+                    sidebar.open('home');
+                } else {
+                    console.error('Location list element not found');
+                }
+            } catch (error) {
+                console.error('Error initializing sidebar:', error);
+            }
+        }
+        
+        // Initialize search functionality
+        function initSearch() {
+            try {
+                const searchInput = document.getElementById('search-input');
+                const searchResults = document.getElementById('search-results');
+                
+                if (!searchInput || !searchResults) {
+                    console.error('Search elements not found');
+                    return;
+                }
+                
+                searchInput.addEventListener('input', () => {
+                    const query = searchInput.value.toLowerCase();
+                    
+                    // Clear previous results
+                    searchResults.innerHTML = '';
+                    
+                    if (query.length < 2) {
+                        searchResults.style.display = 'none';
+                        return;
+                    }
+                    
+                    // Filter locations based on search
+                    const filteredLocations = locationData.filter(location => {
+                        return (location.name && location.name.toLowerCase().includes(query)) || 
+                               (location.number && location.number.toString().includes(query)) ||
+                               (location.description && location.description.toLowerCase().includes(query));
+                    });
+                    
+                    // Display results
+                    if (filteredLocations.length > 0) {
+                        filteredLocations.forEach(location => {
+                            const resultItem = document.createElement('div');
+                            resultItem.className = 'search-result-item';
+                            resultItem.textContent = `${location.number || 'N/A'}: ${location.name || 'Unnamed'}`;
+                            resultItem.addEventListener('click', () => {
+                                showLocationInfo(location);
+                                searchResults.style.display = 'none';
+                                searchInput.value = '';
+                            });
+                            searchResults.appendChild(resultItem);
+                        });
+                        
+                        searchResults.style.display = 'block';
+                    } else {
+                        const noResults = document.createElement('div');
+                        noResults.className = 'search-result-item';
+                        noResults.textContent = 'No matching locations found';
+                        searchResults.appendChild(noResults);
+                        searchResults.style.display = 'block';
+                    }
+                });
+                
+                // Hide search results when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (searchResults && searchInput && !searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                        searchResults.style.display = 'none';
+                    }
+                });
+            } catch (error) {
+                console.error('Error initializing search:', error);
+            }
+        }
+        
+        // Show location information
+        function showLocationInfo(location) {
+            try {
+                if (!location) {
+                    console.error('No location data provided');
+                    return;
+                }
+                
+                // Create popup content
+                const popupContent = `
+                    <div class="location-popup">
+                        <h3>${location.name || 'Unnamed Location'}</h3>
+                        <p><strong>Location #:</strong> ${location.number || 'N/A'}</p>
+                        <p>${location.description || 'No description available'}</p>
+                    </div>
+                `;
+                
+                // Open popup at location
+                const latlng = map.unproject([location.x || 0, location.y || 0], map.getZoom());
+                L.popup()
+                    .setLatLng(latlng)
+                    .setContent(popupContent)
+                    .openOn(map);
+                    
+                // Zoom to location
+                map.setView(latlng, 2);
+                
+                // Highlight building
+                if (svgOverlay) {
+                    const overlayElement = svgOverlay.getElement();
+                    if (overlayElement) {
+                        const buildingElement = overlayElement.getElementById(location.id);
+                        if (buildingElement) {
+                            // Remove previous highlights
+                            const highlighted = overlayElement.querySelectorAll('.building-highlight');
+                            if (highlighted) {
+                                highlighted.forEach(el => {
+                                    el.classList.remove('building-highlight');
+                                });
+                            }
+                            
+                            // Add highlight to current building
+                            buildingElement.classList.add('building-highlight');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error showing location info:', error);
+            }
+        }
+        
+        // Function to refresh data
+        function refreshData() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.getElementById('loading-overlay').textContent = 'Refreshing data...';
+            loadGoogleSheetsData();
         }
     </script>
 </body>
