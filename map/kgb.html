@@ -8,7 +8,6 @@
         body { display: flex; font-family: Arial, sans-serif; }
         #sidebar { width: 250px; padding: 10px; background: #f4f4f4; }
         #map-container { flex: 1; text-align: center; }
-        svg { width: 100%; height: auto; }
         .hidden { display: none; }
         .highlight { stroke: red; stroke-width: 2px; }
     </style>
@@ -25,31 +24,35 @@
         <ul id="location-list"></ul>
     </div>
     <div id="map-container">
-        <svg id="campus-map" viewBox="0 0 1000 1000">
-            <!-- Replace this with your actual SVG content -->
-            <g id="library" class="location academic" data-name="Library" onclick="highlight('library')">
-                <circle cx="300" cy="300" r="30" fill="blue" />
-            </g>
-            <g id="cafeteria" class="location food" data-name="Cafeteria" onclick="highlight('cafeteria')">
-                <circle cx="500" cy="500" r="30" fill="green" />
-            </g>
-        </svg>
+        <object id="campus-map" type="image/svg+xml" data="https://unija-info.github.io/map/map.svg"></object>
     </div>
     <script>
-        document.getElementById("search").addEventListener("input", function() {
-            let searchValue = this.value.toLowerCase();
-            document.querySelectorAll(".location").forEach(el => {
-                el.classList.toggle("hidden", !el.dataset.name.toLowerCase().includes(searchValue));
+        document.getElementById("campus-map").addEventListener("load", function() {
+            let svgDoc = this.contentDocument;
+            let locations = svgDoc.querySelectorAll(".location");
+            
+            locations.forEach(el => {
+                el.addEventListener("click", () => highlight(el));
+            });
+
+            document.getElementById("search").addEventListener("input", function() {
+                let searchValue = this.value.toLowerCase();
+                locations.forEach(el => {
+                    el.classList.toggle("hidden", !el.dataset.name.toLowerCase().includes(searchValue));
+                });
             });
         });
 
-        function highlight(id) {
-            document.querySelectorAll(".location").forEach(el => el.classList.remove("highlight"));
-            document.getElementById(id).classList.add("highlight");
+        function highlight(element) {
+            let svgDoc = document.getElementById("campus-map").contentDocument;
+            svgDoc.querySelectorAll(".location").forEach(el => el.classList.remove("highlight"));
+            element.classList.add("highlight");
         }
 
         function filterCategory(category) {
-            document.querySelectorAll(".location").forEach(el => {
+            let svgDoc = document.getElementById("campus-map").contentDocument;
+            let locations = svgDoc.querySelectorAll(".location");
+            locations.forEach(el => {
                 el.classList.toggle("hidden", !el.classList.contains(category));
             });
         }
