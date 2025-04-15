@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paparan Data Dashboard</title>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="dashboard-container">
+    <header class="dashboard-header">
+      <h1 class="dashboard-title">Paparan Data</h1>
+      <p class="dashboard-subtitle">Sila lihat info di bawah</p>
+    </header>
+    
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="spinner"></div>
+      <p>Memuat data...</p>
+    </div>
+    
+    <section class="dashboard-grid">
+      <div class="dashboard-box">
+        <h2 class="box-title">Penilaian Laman Web</h2>
+        <div id="donutChart" class="chart-container"></div>
+      </div>
+      
+      <div class="dashboard-box">
+        <h2 class="box-title">Perbandingan Penilaian</h2>
+        <div id="barChart" class="chart-container"></div>
+      </div>
+      
+      <div class="dashboard-box">
+        <h2 class="box-title">Trend Penilaian</h2>
+        <div id="lineChart" class="chart-container"></div>
+      </div>
+      
+      <div class="dashboard-box">
+        <h2 class="box-title">Taburan Penilaian</h2>
+        <div id="pieChart" class="chart-container"></div>
+      </div>
+      
+      <div class="dashboard-box">
+        <h2 class="box-title">Analisis Penilaian</h2>
+        <div id="areaChart" class="chart-container"></div>
+      </div>
+      
+      <div class="dashboard-box">
+        <h2 class="box-title">Statistik Penilaian</h2>
+        <div id="columnChart" class="chart-container"></div>
+      </div>
+    </section>
+    
+    <footer class="dashboard-footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3 class="footer-title">Tentang Kami</h3>
+          <p class="footer-text">Menyediakan analisis data berkualiti tinggi untuk membantu anda membuat keputusan yang tepat berdasarkan maklumat yang komprehensif.</p>
+        </div>
+        
+        <div class="footer-section">
+          <h3 class="footer-title">Hubungi Kami</h3>
+          <p class="footer-text">Email: info@example.com<br>Tel: +123 456 7890<br>Alamat: Jalan Contoh 123, Bandar</p>
+        </div>
+        
+        <div class="footer-section">
+          <h3 class="footer-title">Maklumat Lanjut</h3>
+          <p class="footer-text">Data ini dikemaskini secara berkala dan dikumpul daripada sumber yang boleh dipercayai untuk memastikan ketepatan.</p>
+        </div>
+      </div>
+      
+      <p class="copyright">© 2025 Paparan Data. Hak Cipta Terpelihara.</p>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data-handler.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
