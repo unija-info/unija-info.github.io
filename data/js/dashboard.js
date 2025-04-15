@@ -4,12 +4,12 @@ const CONFIG = {
   csvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRjGphnFsxCgXFwogEsmvZKgVxKCjM0zLmw7-O0P2mfOFHrMhSc6al9DUHN_KP0Amww1ffnmZ91vo-V/pub?gid=1096410782&single=true&output=csv',
   // Chart configuration - specify which column to use for each chart
   charts: {
-    donutChart: { columnIndex: 1, title: "Column B Analysis" },  // Column B
-    barChart: { columnIndex: 2, title: "Column C Analysis" },    // Column C
-    lineChart: { columnIndex: 3, title: "Column D Analysis" },   // Column D
-    pieChart: { columnIndex: 4, title: "Column E Analysis" },    // Column E
-    areaChart: { columnIndex: 5, title: "Column F Analysis" },   // Column F
-    columnChart: { columnIndex: 0, title: "Column A Analysis" }  // Column A
+    columnChart: { columnIndex: 1, title: "Column B Analysis" }, // Column A
+    donutChart: { columnIndex: 2, title: "Column C Analysis" },  // Column B
+    barChart: { columnIndex: 3, title: "Column D Analysis" },    // Column C
+    lineChart: { columnIndex: 4, title: "Column E Analysis" },   // Column D
+    pieChart: { columnIndex: 5, title: "Column F Analysis" },    // Column E
+    areaChart: { columnIndex: 6, title: "Column G Analysis" }   // Column F
   },
   // Chart colors
   colors: ['#d4af37', '#1a1a1a', '#7e6b2f', '#c8c8c8', '#625B52', '#A67C00']
