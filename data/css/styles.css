@@ -81,6 +81,14 @@ body {
   text-align: center;
 }
 
+.column-info {
+  display: block;
+  font-size: 14px;
+  font-weight: normal;
+  color: #777;
+  margin-top: 5px;
+}
+
 .chart-container {
   flex-grow: 1;
   width: 100%;
