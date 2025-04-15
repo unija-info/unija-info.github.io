@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paparan Data Dashboard</title>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .dashboard-header {
+      text-align: center;
+      padding: 30px 0;
+      background-color: #1a1a1a;
+      color: #fff;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background-image: linear-gradient(to right, #1a1a1a, #4a3c17);
+    }
+    
+    .dashboard-title {
+      font-size: 32px;
+      margin-bottom: 10px;
+      color: #d4af37; /* Dark gold */
+    }
+    
+    .dashboard-subtitle {
+      font-size: 18px;
+      color: #fff;
+      font-weight: 300;
+    }
+    
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    
+    .dashboard-box {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      min-height: 350px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+    }
+    
+    .dashboard-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+    
+    .box-title {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #d4af37; /* Dark gold */
+      border-bottom: 2px solid #f0f0f0;
+      padding-bottom: 10px;
+      text-align: center;
+    }
+    
+    .chart-container {
+      flex-grow: 1;
+      width: 100%;
+      height: 300px;
+    }
+    
+    .dashboard-footer {
+      margin-top: 40px;
+      padding: 30px 0;
+      background-color: #1a1a1a;
+      color: #fff;
+      border-radius: 10px;
+      text-align: center;
+      background-image: linear-gradient(to right, #1a1a1a, #4a3c17);
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .footer-section {
+      text-align: left;
+    }
+    
+    .footer-title {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #d4af37; /* Dark gold */
+    }
+    
+    .footer-text {
+      font-size: 14px;
+      color: #ccc;
+      line-height: 1.6;
+    }
+    
+    .copyright {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #999;
+    }
+    
+    @media (max-width: 900px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .footer-content {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .dashboard-header {
+        padding: 20px 0;
+      }
+      
+      .dashboard-title {
+        font-size: 24px;
+      }
+      
+      .dashboard-subtitle {
+        font-size: 16px;
+      }
+      
+      .box-title {
+        font-size: 16px;
+      }
+      
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <header class="dashboard-header">
+      <h1 class="dashboard-title">Paparan Data</h1>
+      <p class="dashboard-subtitle">Sila lihat info di bawah</p>
+    </header>
+    
+    <section class="dashboard-grid">
+      <div class="dashboard-box">
+        <h2 class="box-title">Penilaian Laman Web</h2>
+        <div id="donutChart" class="chart-container"></div>
+      </div>
+      
+      <div class="dashboard-box">
+        <h2 class="box-title">Perbandingan Penilaian</h2>
+        <div id="barChart" class="chart-container"></div>
+      </div>
+      
+      <div class="dashboard-box">
+        <h2 class="box-title">Trend Penilaian</h2>
+        <div id="lineChart" class="chart-container"></div>
+      </div>
+      
+      <div class="dashboard-box">
+        <h2 class="box-title">Taburan Penilaian</h2>
+        <div id="pieChart" class="chart-container"></div>
+      </div>
+      
+      <div class="dashboard-box">
+        <h2 class="box-title">Analisis Penilaian</h2>
+        <div id="areaChart" class="chart-container"></div>
+      </div>
+      
+      <div class="dashboard-box">
+        <h2 class="box-title">Statistik Penilaian</h2>
+        <div id="columnChart" class="chart-container"></div>
+      </div>
+    </section>
+    
+    <footer class="dashboard-footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3 class="footer-title">Tentang Kami</h3>
+          <p class="footer-text">Menyediakan analisis data berkualiti tinggi untuk membantu anda membuat keputusan yang tepat berdasarkan maklumat yang komprehensif.</p>
+        </div>
+        
+        <div class="footer-section">
+          <h3 class="footer-title">Hubungi Kami</h3>
+          <p class="footer-text">Email: info@example.com<br>Tel: +123 456 7890<br>Alamat: Jalan Contoh 123, Bandar</p>
+        </div>
+        
+        <div class="footer-section">
+          <h3 class="footer-title">Maklumat Lanjut</h3>
+          <p class="footer-text">Data ini dikemaskini secara berkala dan dikumpul daripada sumber yang boleh dipercayai untuk memastikan ketepatan.</p>
+        </div>
+      </div>
+      
+      <p class="copyright">© 2025 Paparan Data. Hak Cipta Terpelihara.</p>
+    </footer>
+  </div>
+
+  <script>
+    google.charts.load('current', { packages: ['corechart'] });
+    google.charts.setOnLoadCallback(fetchData);
+
+    async function fetchData() {
+      // Replace this with your actual published CSV link
+      const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRjGphnFsxCgXFwogEsmvZKgVxKCjM0zLmw7-O0P2mfOFHrMhSc6al9DUHN_KP0Amww1ffnmZ91vo-V/pub?gid=1096410782&single=true&output=csv';
+      
+      try {
+        const response = await fetch(csvUrl);
+        const dataText = await response.text();
+        const rows = dataText.trim().split('\n').slice(1); // remove header
+        
+        // Process data
+        const ratingCounts = {};
+        
+        rows.forEach(row => {
+          const cols = row.split(',');
+          const value = cols[1]?.trim(); // Get Column B safely
+          if (value) {
+            if (ratingCounts[value]) {
+              ratingCounts[value]++;
+            } else {
+              ratingCounts[value] = 1;
+            }
+          }
+        });
+        
+        // Create data array for charts
+        const chartDataArray = [['Rating', 'Count']];
+        for (const [rating, count] of Object.entries(ratingCounts)) {
+          chartDataArray.push([rating, count]);
+        }
+        
+        // Draw all charts
+        drawDonutChart(chartDataArray);
+        drawBarChart(chartDataArray);
+        drawLineChart(chartDataArray);
+        drawPieChart(chartDataArray);
+        drawAreaChart(chartDataArray);
+        drawColumnChart(chartDataArray);
+        
+      } catch (error) {
+        console.error('Error fetching or processing data:', error);
+        document.querySelectorAll('.chart-container').forEach(container => {
+          container.innerHTML = '<p style="color: red; text-align: center;">Error loading chart data</p>';
+        });
+      }
+    }
+
+    function drawDonutChart(chartDataArray) {
+      const data = google.visualization.arrayToDataTable(chartDataArray);
+      const options = {
+        title: '',
+        pieHole: 0.5,
+        colors: ['#d4af37', '#1a1a1a', '#7e6b2f', '#c8c8c8', '#625B52', '#A67C00'],
+        chartArea: { width: '90%', height: '80%' },
+        legend: { position: 'bottom' }
+      };
+      const chart = new google.visualization.PieChart(document.getElementById('donutChart'));
+      chart.draw(data, options);
+    }
+
+    function drawBarChart(chartDataArray) {
+      const data = google.visualization.arrayToDataTable(chartDataArray);
+      const options = {
+        title: '',
+        colors: ['#d4af37'],
+        chartArea: { width: '80%', height: '70%' },
+        hAxis: { title: 'Count' },
+        vAxis: { title: 'Rating' },
+        legend: { position: 'none' }
+      };
+      const chart = new google.visualization.BarChart(document.getElementById('barChart'));
+      chart.draw(data, options);
+    }
+
+    function drawLineChart(chartDataArray) {
+      const data = google.visualization.arrayToDataTable(chartDataArray);
+      const options = {
+        title: '',
+        colors: ['#d4af37'],
+        chartArea: { width: '80%', height: '70%' },
+        hAxis: { title: 'Rating' },
+        vAxis: { title: 'Count' },
+        curveType: 'function',
+        legend: { position: 'none' }
+      };
+      const chart = new google.visualization.LineChart(document.getElementById('lineChart'));
+      chart.draw(data, options);
+    }
+
+    function drawPieChart(chartDataArray) {
+      const data = google.visualization.arrayToDataTable(chartDataArray);
+      const options = {
+        title: '',
+        colors: ['#d4af37', '#1a1a1a', '#7e6b2f', '#c8c8c8', '#625B52', '#A67C00'],
+        chartArea: { width: '90%', height: '80%' },
+        legend: { position: 'bottom' }
+      };
+      const chart = new google.visualization.PieChart(document.getElementById('pieChart'));
+      chart.draw(data, options);
+    }
+
+    function drawAreaChart(chartDataArray) {
+      const data = google.visualization.arrayToDataTable(chartDataArray);
+      const options = {
+        title: '',
+        colors: ['#d4af37'],
+        chartArea: { width: '80%', height: '70%' },
+        hAxis: { title: 'Rating' },
+        vAxis: { title: 'Count' },
+        legend: { position: 'none' }
+      };
+      const chart = new google.visualization.AreaChart(document.getElementById('areaChart'));
+      chart.draw(data, options);
+    }
+
+    function drawColumnChart(chartDataArray) {
+      const data = google.visualization.arrayToDataTable(chartDataArray);
+      const options = {
+        title: '',
+        colors: ['#d4af37'],
+        chartArea: { width: '80%', height: '70%' },
+        hAxis: { title: 'Rating' },
+        vAxis: { title: 'Count' },
+        legend: { position: 'none' }
+      };
+      const chart = new google.visualization.ColumnChart(document.getElementById('columnChart'));
+      chart.draw(data, options);
+    }
+
+    // Make charts responsive
+    window.addEventListener('resize', function() {
+      fetchData();
+    });
+  </script>
+</body>
+</html>
