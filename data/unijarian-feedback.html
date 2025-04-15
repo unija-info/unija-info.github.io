@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paparan Data Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .dashboard-header {
+      text-align: center;
+      padding: 30px 0;
+      background-color: #1a1a1a;
+      color: #fff;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background-image: linear-gradient(to right, #1a1a1a, #4a3c17);
+    }
+    .dashboard-title {
+      font-size: 32px;
+      margin-bottom: 10px;
+      color: #d4af37; /* Dark gold */
+    }
+    .dashboard-subtitle {
+      font-size: 18px;
+      color: #fff;
+      font-weight: 300;
+      margin-bottom: 15px;
+    }
+    .data-summary {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      padding: 8px 15px;
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 16px;
+      color: #d4af37;
+    }
+    .message-container {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 60px 20px;
+      margin: 40px 0;
+      text-align: center;
+    }
+    .message-text {
+      font-size: 24px;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+    }
+    .message-icon {
+      font-size: 64px;
+      margin-bottom: 30px;
+      color: #d4af37;
+    }
+    .message-subtext {
+      font-size: 16px;
+      color: #777;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .dashboard-footer {
+      margin-top: 40px;
+      padding: 30px 0;
+      background-color: #1a1a1a;
+      color: #fff;
+      border-radius: 10px;
+      text-align: center;
+      background-image: linear-gradient(to right, #1a1a1a, #4a3c17);
+    }
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .footer-section {
+      text-align: left;
+    }
+    .footer-title {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #d4af37; /* Dark gold */
+    }
+    .footer-text {
+      font-size: 14px;
+      color: #ccc;
+      line-height: 1.6;
+    }
+    .copyright {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #999;
+    }
+    @media (max-width: 900px) {
+      .footer-content {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .message-text {
+        font-size: 20px;
+      }
+    }
+    @media (max-width: 600px) {
+      .dashboard-header {
+        padding: 20px 0;
+      }
+      
+      .dashboard-title {
+        font-size: 24px;
+      }
+      
+      .dashboard-subtitle {
+        font-size: 16px;
+      }
+      
+      .message-text {
+        font-size: 18px;
+      }
+      
+      .message-icon {
+        font-size: 48px;
+      }
+      
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <header class="dashboard-header">
+      <h1 class="dashboard-title">Paparan Data</h1>
+      <p class="dashboard-subtitle">Analisis Maklumbalas dari Unijarians</p>
+      <div id="data-summary" class="data-summary">
+        Sedang menunggu maklumbalas
+      </div>
+    </header>
+    
+    <section class="message-container">
+      <div class="message-icon">📊</div>
+      <h2 class="message-text">Maklumat akan dipaparkan selepas 200 maklumbalas dicapai.</h2>
+      <p class="message-subtext">Terima kasih atas kesabaran anda. Paparan data yang komprehensif akan tersedia sebaik sahaja jumlah maklumbalas yang diperlukan dicapai.</p>
+    </section>
+    
+   <footer class="dashboard-footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3 class="footer-title">Info</h3>
+          <p class="footer-text">Data ini dikumpul bedasarkan Form yang telah disusun oleh admin Unija Confession.<br> Belum meberikan maklumbalas?<br>Sila jawab di sini</p>
+        </div>
+        
+        
+        <div class="footer-section">
+          <h3 class="footer-title">Maklumat Lanjut</h3>
+          <p class="footer-text">Data ini akan dikemaskini secara berkala dan dikumpul daripada respon pelajar untuk menggambarkan realiti semasa di UniSZA.</p>
+        </div>
+      </div>
+      
+      <p class=>Dibangun dan dikemaskini oleh unija.info</p>
+    </footer>
+  </div>
+</body>
+</html>
