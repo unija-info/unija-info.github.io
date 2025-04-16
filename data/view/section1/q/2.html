@@ -140,7 +140,7 @@
           // Send title information to parent window if in iframe
           if (window.self !== window.top) {
             window.parent.postMessage({
-              frameId: 'iframe1', // Matches the ID in the parent page
+              frameId: 'iframe2', // Matches the ID in the parent page
               title: `Soalan ${columnName}`,
               columnInfo: `Column ${columnLetter}`
             }, '*'); // For production, replace '*' with your dashboard domain
