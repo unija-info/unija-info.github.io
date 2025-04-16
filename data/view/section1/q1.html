@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donut Chart - Penilaian Laman Web</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .page-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .title-container {
+        text-align: center;
+        background-color: #1a1a1a;
+        color: #d4af37;
+        padding: 8px 10px 12px 10px;
+        margin: 0;
+        display: none;
+        /* Hidden by default for iframe embedding */
+      }
+
+      .main-title {
+        font-size: 18px;
+        margin: 0;
+        padding: 0;
+      }
+
+      .column-info {
+        display: block;
+        font-size: 14px;
+        font-weight: normal;
+        color: #999;
+        margin-top: 5px;
+      }
+
+      .chart-container {
+        flex: 1;
+        min-height: 0;
+        /* Important for flex child */
+        width: 100%;
+      }
+
+      .chart-subtitle {
+        text-align: center;
+        font-size: 14px;
+        color: #555;
+        padding: 8px;
+        font-style: italic;
+        background-color: #f9f9f9;
+        border-top: 1px solid #eee;
+      }
+
+      /* This class will only be applied when in standalone mode */
+      body.standalone .title-container {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-container">
+      <div class="title-container">
+        <h2 class="main-title">Loading...</h2>
+        <span class="column-info">Column B</span>
+      </div>
+      <div id="chart" class="chart-container"></div>
+      <div id="chart-subtitle" class="chart-subtitle"></div>
+    </div>
+    <script>
+      // Check if this page is loaded standalone (not in iframe)
+      if (window.self === window.top) {
+        document.body.classList.add('standalone');
+      }
+      // Chart configuration
+      const columnIndex = 1; // Column B (2nd column, 0-indexed)
+      const columnLetter = "B";
+      const chartSubtitle = "Analysis of the selected data column"; // Custom subtitle - can be changed as needed
+      const colors = ['#d4af37', '#1a1a1a', '#7e6b2f', '#c8c8c8', '#625B52', '#A67C00'];
+      const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSmbqzj4PEDzCeremuqIQsOZLDTK0RgMcVQ5OAedEQ8RKYSg7eXl52QO0HyrNW-JWZ8rZudXQBqLGPR/pub?gid=609743275&single=true&output=csv';
+      // Initialize Google Charts
+      google.charts.load('current', {
+        packages: ['corechart']
+      });
+      google.charts.setOnLoadCallback(fetchData);
+      // Fetch and process data
+      async function fetchData() {
+        try {
+          const response = await fetch(csvUrl);
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          const dataText = await response.text();
+          const rows = dataText.trim().split('\n');
+          const headers = rows[0].split(',');
+          const dataRows = rows.slice(1); // remove header
+          // Get column name
+          const columnName = headers[columnIndex]?.trim() || `Unknown Column`;
+          // Update standalone title with column name
+          const titleElement = document.querySelector('.main-title');
+          if (titleElement) {
+            titleElement.textContent = `Soalan ${columnName}`; // Add "Soalan" prefix
+          }
+          // Update column info to show only which column is selected
+          const columnInfoElement = document.querySelector('.column-info');
+          if (columnInfoElement) {
+            columnInfoElement.textContent = `Column ${columnLetter}`;
+          }
+          // Process data for this column
+          const valueCounts = {};
+          dataRows.forEach(row => {
+            const cols = row.split(',');
+            if (cols.length > columnIndex) {
+              const value = cols[columnIndex]?.trim();
+              if (value) {
+                valueCounts[value] = (valueCounts[value] || 0) + 1;
+              }
+            }
+          });
+          // Create data array for chart
+          const chartDataArray = [
+            ['Value', 'Count']
+          ];
+          for (const [value, count] of Object.entries(valueCounts)) {
+            chartDataArray.push([value, count]);
+          }
+          // Set subtitle text immediately so it shows up
+          document.getElementById('chart-subtitle').textContent = chartSubtitle;
+          // Draw chart
+          drawChart(chartDataArray, columnName);
+          // Send title information to parent window if in iframe
+          if (window.self !== window.top) {
+            window.parent.postMessage({
+              frameId: 'iframe1', // Matches the ID in the parent page
+              title: `Soalan ${columnName}`,
+              columnInfo: `Column ${columnLetter}`
+            }, '*'); // For production, replace '*' with your dashboard domain
+          }
+        } catch (error) {
+          console.error('Error fetching or processing data:', error);
+          document.getElementById('chart').innerHTML = `
+					<p style="color: red; text-align: center;">
+          Error loading chart data: ${error.message}</p>`;
+        }
+      }
+      // Draw donut chart
+      function drawChart(chartDataArray, columnName) {
+        const data = google.visualization.arrayToDataTable(chartDataArray);
+        const options = {
+          title: '',
+          pieHole: 0.5,
+          colors: colors,
+          chartArea: {
+            width: '90%',
+            height: '85%'
+          },
+          legend: {
+            position: 'bottom'
+          }
+        };
+        const chart = new google.visualization.PieChart(document.getElementById('chart'));
+        chart.draw(data, options);
+      }
+      // Make chart responsive
+      window.addEventListener('resize', function() {
+        // Use a timeout to ensure resize completes before redrawing
+        clearTimeout(window.resizeTimer);
+        window.resizeTimer = setTimeout(fetchData, 100);
+      });
+    </script>
+  </body>
+</html>
