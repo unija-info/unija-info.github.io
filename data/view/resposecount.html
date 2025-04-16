@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Response Counter - Penilaian Laman Web</title>
+    <style>
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .page-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .title-container {
+        text-align: center;
+        background-color: #1a1a1a;
+        color: #d4af37;
+        padding: 8px 10px 12px 10px;
+        margin: 0;
+        display: none;
+        /* Hidden by default for iframe embedding */
+      }
+
+      .main-title {
+        font-size: 18px;
+        margin: 0;
+        padding: 0;
+      }
+
+      .column-info {
+        display: block;
+        font-size: 14px;
+        font-weight: normal;
+        color: #999;
+        margin-top: 5px;
+      }
+
+      .counter-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #f9f9f9;
+        padding: 20px;
+      }
+
+      .counter-label {
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #1a1a1a;
+        font-weight: 600;
+      }
+
+      .counter-display {
+        background-color: rgba(26, 26, 26, 0.05);
+        border-radius: 10px;
+        padding: 30px 50px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        border: 2px solid #d4af37;
+      }
+
+      .counter-value {
+        font-size: 72px;
+        color: #d4af37;
+        font-weight: bold;
+        min-width: 120px;
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+        height: 100px;
+        line-height: 100px;
+      }
+
+      .digit-container {
+        display: inline-block;
+        position: relative;
+        height: 100px;
+        overflow: hidden;
+        width: 0.6em;
+      }
+
+      .digit-strip {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        transition: transform 1.5s ease-in-out;
+      }
+
+      .digit {
+        height: 100px;
+        line-height: 100px;
+        font-size: 72px;
+      }
+
+      /* This class will only be applied when in standalone mode */
+      body.standalone .title-container {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-container">
+      <div class="title-container">
+        <h2 class="main-title">Loading...</h2>
+        <span class="column-info"></span>
+      </div>
+      <div class="counter-container">
+        <div class="counter-label">Total Responses</div>
+        <div class="counter-display">
+          <div id="counter" class="counter-value">0</div>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Check if this page is loaded standalone (not in iframe)
+      if (window.self === window.top) {
+        document.body.classList.add('standalone');
+      }
+      
+      // Google Sheet CSV URL
+      const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSmbqzj4PEDzCeremuqIQsOZLDTK0RgMcVQ5OAedEQ8RKYSg7eXl52QO0HyrNW-JWZ8rZudXQBqLGPR/pub?gid=609743275&single=true&output=csv';
+      
+      // Fetch and process data
+      async function fetchData() {
+        try {
+          const response = await fetch(csvUrl);
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          const dataText = await response.text();
+          const rows = dataText.trim().split('\n');
+          
+          // Update title
+          const titleElement = document.querySelector('.main-title');
+          if (titleElement) {
+            titleElement.textContent = 'Response Counter';
+          }
+          
+          // Count rows (excluding header)
+          const responseCount = rows.length - 1;
+          
+          // Animate the counter
+          animateCounter(responseCount);
+          
+          // Send title information to parent window if in iframe
+          if (window.self !== window.top) {
+            window.parent.postMessage({
+              frameId: 'iframe2', // Matches the ID in the parent page
+              title: 'Response Counter',
+              columnInfo: ''
+            }, '*'); // For production, replace '*' with your dashboard domain
+          }
+        } catch (error) {
+          console.error('Error fetching or processing data:', error);
+          document.querySelector('.counter-container').innerHTML = `
+            <p style="color: red; text-align: center;">
+            Error loading data: ${error.message}</p>`;
+        }
+      }
+      
+      function animateCounter(targetValue) {
+        const counterElement = document.getElementById('counter');
+        
+        // Clear any existing content
+        counterElement.innerHTML = '';
+        
+        // Convert target value to string for digit-by-digit animation
+        const targetValueStr = targetValue.toString();
+        
+        // Create a digit container and strip for each digit
+        for (let i = 0; i < targetValueStr.length; i++) {
+          const digitContainer = document.createElement('div');
+          digitContainer.className = 'digit-container';
+          
+          const digitStrip = document.createElement('div');
+          digitStrip.className = 'digit-strip';
+          
+          // Create digits 0-9 for the strip
+          for (let j = 0; j <= 9; j++) {
+            const digit = document.createElement('div');
+            digit.className = 'digit';
+            digit.textContent = j;
+            digitStrip.appendChild(digit);
+          }
+          
+          // Add the final target digit
+          const finalDigit = document.createElement('div');
+          finalDigit.className = 'digit';
+          finalDigit.textContent = targetValueStr[i];
+          digitStrip.appendChild(finalDigit);
+          
+          digitContainer.appendChild(digitStrip);
+          counterElement.appendChild(digitContainer);
+          
+          // Set initial position (at 0)
+          digitStrip.style.transform = 'translateY(0px)';
+          
+          // Animate after a delay based on position (rightmost digits animate first)
+          setTimeout(() => {
+            const finalDigitValue = parseInt(targetValueStr[i]);
+            const finalPosition = -finalDigitValue * 100;
+            digitStrip.style.transform = `translateY(${finalPosition}px)`;
+          }, (targetValueStr.length - i - 1) * 200);
+        }
+      }
+      
+      // Initialize the counter
+      document.addEventListener('DOMContentLoaded', fetchData);
+      
+      // Make responsive
+      window.addEventListener('resize', function() {
+        // No special handling needed for resize since the counter is responsive by design
+      });
+    </script>
+  </body>
+</html>
