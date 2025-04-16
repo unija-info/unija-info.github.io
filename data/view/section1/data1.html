@@ -34,6 +34,14 @@
       text-align: center;
       margin-top: 5px;
     }
+    .chart-subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      margin-top: 5px;
+      padding: 5px;
+      font-style: italic;
+    }
     /* This class will only be applied when in standalone mode */
     body.standalone .standalone-title {
       display: block;
@@ -46,6 +54,7 @@
 <body>
   <h2 class="standalone-title">Penilaian Laman Web <span class="column-info"></span></h2>
   <div id="chart" class="chart-container"></div>
+  <div id="chart-subtitle" class="chart-subtitle"></div>
 
   <script>
     // Check if this page is loaded standalone (not in iframe)
@@ -54,9 +63,10 @@
     }
 
     // Chart configuration
-    const columnIndex = 7; // Column H (8th column, 0-indexed)
-    const columnLetter = "H";
+    const columnIndex = 1; // Column B (2nd column, 0-indexed)
+    const columnLetter = "B";
     const chartTitle = "Penilaian Laman Web"; // Custom chart title
+    const chartSubtitle = "Distribution of values from Column B"; // Custom subtitle
     const colors = ['#d4af37', '#1a1a1a', '#7e6b2f', '#c8c8c8', '#625B52', '#A67C00'];
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSmbqzj4PEDzCeremuqIQsOZLDTK0RgMcVQ5OAedEQ8RKYSg7eXl52QO0HyrNW-JWZ8rZudXQBqLGPR/pub?gid=609743275&single=true&output=csv';
 
@@ -105,7 +115,11 @@
         }
         
         // Draw chart
-        drawChart(chartDataArray);
+        drawChart(chartDataArray, columnName);
+        
+        // Set subtitle text
+        document.getElementById('chart-subtitle').textContent = 
+          `${chartSubtitle.replace('Column B', `Column ${columnLetter} (${columnName})`)}`;
         
         // Send title information to parent window if in iframe
         if (window.self !== window.top) {
@@ -124,7 +138,7 @@
     }
 
     // Draw donut chart
-    function drawChart(chartDataArray) {
+    function drawChart(chartDataArray, columnName) {
       const data = google.visualization.arrayToDataTable(chartDataArray);
       const options = {
         title: '',
