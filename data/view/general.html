@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paparan Data Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .dashboard-header {
+      text-align: center;
+      padding: 30px 0;
+      background-color: #1a1a1a;
+      color: #fff;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background-image: linear-gradient(to right, #1a1a1a, #4a3c17);
+    }
+    .dashboard-title {
+      font-size: 32px;
+      margin-bottom: 10px;
+      color: #d4af37; /* Dark gold */
+    }
+    .dashboard-subtitle {
+      font-size: 18px;
+      color: #fff;
+      font-weight: 300;
+      margin-bottom: 15px;
+    }
+    .data-summary {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      padding: 8px 15px;
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 16px;
+      color: #d4af37;
+    }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .dashboard-box {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      min-height: 350px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+    }
+    .dashboard-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+    .box-title {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #d4af37; /* Dark gold */
+      border-bottom: 2px solid #f0f0f0;
+      padding-bottom: 10px;
+      text-align: center;
+    }
+    .box-subtitle {
+      font-size: 14px;
+      color: #777;
+      text-align: center;
+      margin-top: -10px;
+      margin-bottom: 15px;
+    }
+    .chart-container {
+      flex-grow: 1;
+      width: 100%;
+      height: 300px;
+      border: none;
+      overflow: hidden;
+    }
+    .dashboard-footer {
+      margin-top: 40px;
+      padding: 30px 0;
+      background-color: #1a1a1a;
+      color: #fff;
+      border-radius: 10px;
+      text-align: center;
+      background-image: linear-gradient(to right, #1a1a1a, #4a3c17);
+    }
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .footer-section {
+      text-align: left;
+    }
+    .footer-title {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #d4af37; /* Dark gold */
+    }
+    .footer-text {
+      font-size: 14px;
+      color: #ccc;
+      line-height: 1.6;
+    }
+    .copyright {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #999;
+    }
+    @media (max-width: 900px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .footer-content {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 600px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .dashboard-header {
+        padding: 20px 0;
+      }
+      
+      .dashboard-title {
+        font-size: 24px;
+      }
+      
+      .dashboard-subtitle {
+        font-size: 16px;
+      }
+      
+      .box-title {
+        font-size: 16px;
+      }
+      
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <header class="dashboard-header">
+      <h1 class="dashboard-title">Paparan Data</h1>
+      <p class="dashboard-subtitle">SEKSYEN 2: SOALAN BERKAITAN HEBAHAN PERSATUAN</p>
+      <div id="data-summary" class="data-summary">
+        Jumlah Maklumat: <strong>Loading...</strong>
+      </div>
+    </header>
+    
+    <section class="dashboard-grid">
+      <div class="dashboard-box">
+        <h2 class="box-title" id="iframe1-title">Penilaian Laman Web</h2>
+        <p class="box-subtitle" id="iframe1-subtitle"></p>
+        <iframe class="chart-container" id="iframe1" src="https://view.unija.info/data/view/test1.html" frameborder="0"></iframe>
+      </div>
+      
+      <div class="dashboard-box">
+        <h2 class="box-title" id="iframe2-title">Perbandingan Penilaian</h2>
+        <p class="box-subtitle" id="iframe2-subtitle"></p>
+        <iframe class="chart-container" id="iframe2" src="charts/barChart.html" frameborder="0"></iframe>
+      </div>
+      
+      <div class="dashboard-box">
+        <h2 class="box-title" id="iframe3-title">Trend Penilaian</h2>
+        <p class="box-subtitle" id="iframe3-subtitle"></p>
+        <iframe class="chart-container" id="iframe3" src="charts/lineChart.html" frameborder="0"></iframe>
+      </div>
+      
+      <div class="dashboard-box">
+        <h2 class="box-title" id="iframe4-title">Taburan Penilaian</h2>
+        <p class="box-subtitle" id="iframe4-subtitle"></p>
+        <iframe class="chart-container" id="iframe4" src="charts/pieChart.html" frameborder="0"></iframe>
+      </div>
+      
+      <div class="dashboard-box">
+        <h2 class="box-title" id="iframe5-title">Analisis Penilaian</h2>
+        <p class="box-subtitle" id="iframe5-subtitle"></p>
+        <iframe class="chart-container" id="iframe5" src="charts/areaChart.html" frameborder="0"></iframe>
+      </div>
+      
+      <div class="dashboard-box">
+        <h2 class="box-title" id="iframe6-title">Statistik Penilaian</h2>
+        <p class="box-subtitle" id="iframe6-subtitle"></p>
+        <iframe class="chart-container" id="iframe6" src="charts/columnChart.html" frameborder="0"></iframe>
+      </div>
+    </section>
+    
+    <footer class="dashboard-footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3 class="footer-title">Tentang Kami</h3>
+          <p class="footer-text">Menyediakan analisis data berkualiti tinggi untuk membantu anda membuat keputusan yang tepat berdasarkan maklumat yang komprehensif.</p>
+        </div>
+        
+        <div class="footer-section">
+          <h3 class="footer-title">Hubungi Kami</h3>
+          <p class="footer-text">Email: info@example.com<br>Tel: +123 456 7890<br>Alamat: Jalan Contoh 123, Bandar</p>
+        </div>
+        
+        <div class="footer-section">
+          <h3 class="footer-title">Maklumat Lanjut</h3>
+          <p class="footer-text">Data ini dikemaskini secara berkala dan dikumpul daripada sumber yang boleh dipercayai untuk memastikan ketepatan.</p>
+        </div>
+      </div>
+      
+      <p class="copyright">© 2025 Paparan Data. Hak Cipta Terpelihara.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Fetch total records for display
+    async function fetchTotalRecords() {
+      try {
+        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSmbqzj4PEDzCeremuqIQsOZLDTK0RgMcVQ5OAedEQ8RKYSg7eXl52QO0HyrNW-JWZ8rZudXQBqLGPR/pub?gid=609743275&single=true&output=csv';
+        const response = await fetch(csvUrl);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const dataText = await response.text();
+        const rows = dataText.trim().split('\n');
+        const totalRows = rows.length - 1; // subtract header row
+        
+        document.getElementById('data-summary').innerHTML = 
+          `Jumlah Maklumat: <strong>${totalRows}</strong>`;
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        document.getElementById('data-summary').innerHTML = 
+          `<span style="color: red;">Data loading error: ${error.message}</span>`;
+      }
+    }
+
+    // Load total records when page loads
+    fetchTotalRecords();
+    
+    // Function to receive messages from iframes
+    window.addEventListener('message', function(event) {
+      // For production, uncomment the next line and add your domains for security
+      // if (!["https://view.unija.info", "your-charts-domain.com"].includes(event.origin)) return;
+      
+      // Process the message data
+      const data = event.data;
+      
+      // Check which iframe sent the message and update corresponding title
+      if (data.frameId === 'iframe1') {
+        document.getElementById('iframe1-title').textContent = data.title || 'Penilaian Laman Web';
+        document.getElementById('iframe1-subtitle').textContent = data.columnInfo || '';
+      } else if (data.frameId === 'iframe2') {
+        document.getElementById('iframe2-title').textContent = data.title || 'Perbandingan Penilaian';
+        document.getElementById('iframe2-subtitle').textContent = data.columnInfo || '';
+      } else if (data.frameId === 'iframe3') {
+        document.getElementById('iframe3-title').textContent = data.title || 'Trend Penilaian';
+        document.getElementById('iframe3-subtitle').textContent = data.columnInfo || '';
+      } else if (data.frameId === 'iframe4') {
+        document.getElementById('iframe4-title').textContent = data.title || 'Taburan Penilaian';
+        document.getElementById('iframe4-subtitle').textContent = data.columnInfo || '';
+      } else if (data.frameId === 'iframe5') {
+        document.getElementById('iframe5-title').textContent = data.title || 'Analisis Penilaian';
+        document.getElementById('iframe5-subtitle').textContent = data.columnInfo || '';
+      } else if (data.frameId === 'iframe6') {
+        document.getElementById('iframe6-title').textContent = data.title || 'Statistik Penilaian';
+        document.getElementById('iframe6-subtitle').textContent = data.columnInfo || '';
+      }
+    });
+  </script>
+</body>
+</html>
