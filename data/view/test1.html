@@ -54,9 +54,9 @@
     }
 
     // Chart configuration
-    const columnIndex = 7; // Column B
+    const columnIndex = 7; // Column H (8th column, 0-indexed)
     const columnLetter = "H";
-    const chartTitle = "Column B Analysis";
+    const chartTitle = "Penilaian Laman Web"; // Custom chart title
     const colors = ['#d4af37', '#1a1a1a', '#7e6b2f', '#c8c8c8', '#625B52', '#A67C00'];
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSmbqzj4PEDzCeremuqIQsOZLDTK0RgMcVQ5OAedEQ8RKYSg7eXl52QO0HyrNW-JWZ8rZudXQBqLGPR/pub?gid=609743275&single=true&output=csv';
 
@@ -106,6 +106,15 @@
         
         // Draw chart
         drawChart(chartDataArray);
+        
+        // Send title information to parent window if in iframe
+        if (window.self !== window.top) {
+          window.parent.postMessage({
+            frameId: 'iframe1', // Matches the ID in the parent page
+            title: chartTitle,
+            columnInfo: `${columnName} - ${columnLetter}`
+          }, '*');  // For production, replace '*' with your dashboard domain
+        }
         
       } catch (error) {
         console.error('Error fetching or processing data:', error);
