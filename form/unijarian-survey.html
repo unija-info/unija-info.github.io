@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unija Form</title>
     <style>
+        /* Root variables for new color scheme */
+        :root {
+            --primary-color: #d4af37; /* Dark gold */
+            --secondary-color: #f5f5f5; /* White */
+            --text-color: #333333; /* Soft black */
+            --background-color: #f0f0f0; /* Light grey */
+            --dark-grey: #666666; /* Darker grey for accents */
+            --card-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
         /* Reset and base styles */
         * {
             margin: 0;
@@ -15,9 +25,9 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background-color: #f5f7fa;
-            padding-bottom: 50px; /* Space for footer */
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding-bottom: 40px; /* Reduced space for smaller footer */
         }
         
         .container {
@@ -26,99 +36,279 @@
             padding: 0 20px;
         }
         
-        /* Header styles - smaller and non-fixed */
+        /* Updated header with centered elements */
         header {
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 10px 0;
-            margin-bottom: 20px;
+            background: linear-gradient(135deg, #1a1a1a, #333333); /* Gradient from black to dark grey */
+            padding: 15px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+        
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         
         .logo-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
         
         .logo {
-            width: 180px;
-            height: 60px;
+            width: 100px; /* Smaller logo */
+            height: 40px;
             object-fit: contain;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .header-text {
+            text-align: center;
         }
         
         h1 {
-            color: #2c3e50;
+            color: var(--primary-color);
             margin-bottom: 5px;
-            text-align: center;
-            font-size: 20px;
+            font-size: 22px;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            letter-spacing: 1px;
         }
         
         .description {
-            margin-bottom: 8px;
-            font-size: 16px;
-            text-align: center;
+            margin-bottom: 5px;
+            font-size: 15px;
+            color: var(--secondary-color);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
         
         .button-container {
             display: flex;
             justify-content: center;
-            margin-bottom: 5px;
+            margin: 15px 0;
         }
         
-        .results-button {
+        .gold-button {
             display: inline-block;
-            background-color: #3498db;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 6px;
+            background: var(--primary-color);
+            color: #1a1a1a;
+            padding: 8px 18px;
+            border-radius: 30px;
             font-size: 15px;
             font-weight: bold;
             text-decoration: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
         }
         
-        .results-button:hover {
-            background-color: #2980b9;
+        .gold-button:hover {
+            background: #e5c76b;
             transform: translateY(-2px);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            box-shadow: 0 6px 15px rgba(212, 175, 55, 0.4);
         }
         
+        /* Decorative wave between sections */
+        .wave-divider {
+            height: 50px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z' fill='%23f5f5f5'/%3E%3C/svg%3E");
+            background-size: cover;
+            margin-top: -25px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Enhanced content section */
         .content-section {
             background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-top: 4px solid var(--primary-color);
+            position: relative;
+        }
+        
+        .content-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .form-links {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .form-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        
+        .form-link:hover {
+            color: #e5c76b;
+            text-decoration: underline;
         }
         
         .form-container {
             width: 100%;
             margin: 0 auto;
+            position: relative;
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            z-index: 5;
+        }
+        
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
         
         .form-container iframe {
             width: 100%;
             min-height: 700px;
             border: none;
+            position: relative;
+            z-index: 10;
         }
         
-        /* Fixed footer */
+        /* Floating message button */
+        .feedback-button {
+            position: fixed;
+            right: 20px;
+            bottom: 60px; /* Adjusted for smaller footer */
+            background: var(--primary-color);
+            color: #1a1a1a;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            text-decoration: none;
+        }
+        
+        .feedback-button:hover {
+            transform: scale(1.1);
+            background: #e5c76b;
+        }
+        
+        .feedback-icon {
+            font-size: 20px;
+        }
+        
+        /* Smaller Enhanced footer */
         footer {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            background-color: rgba(255, 255, 255, 0.95);
+            background: #1a1a1a;
             text-align: center;
-            padding: 10px 0;
-            color: #7f8c8d;
-            font-size: 14px;
+            padding: 8px 0;
+            color: var(--secondary-color);
+            font-size: 13px;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
             z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
+        
+        .footer-left {
+            margin-left: 20px;
+        }
+        
+        .footer-center {
+            flex: 1;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-text {
+            font-size: 12px;
+        }
+        
+        .footer-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            color: #e5c76b;
+            text-decoration: underline;
+        }
+        
+        .response-count-container {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    padding: 3px 10px;
+    color: var(--primary-color);
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.response-count {
+    margin-right: 4px;
+    min-width: 20px;
+    text-align: right;
+    display: inline-flex;
+    align-items: center; /* Add vertical alignment */
+}
+
+/* Counter digit animation */
+.digit-container {
+    display: inline-block;
+    position: relative;
+    height: 20px;
+    overflow: hidden;
+    width: 0.6em;
+    vertical-align: middle; /* Change from baseline to middle */
+}
+
+.digit-strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    transition: transform 1.5s ease-in-out;
+}
+
+.digit {
+    height: 20px;
+    line-height: 20px;
+    font-size: 14px;
+    font-weight: bold;
+}
         
         /* Responsive styles */
         @media (max-width: 768px) {
@@ -127,7 +317,7 @@
             }
             
             .content-section {
-                padding: 15px;
+                padding: 20px;
             }
             
             .form-container iframe {
@@ -141,12 +331,13 @@
             }
             
             .content-section {
-                padding: 10px;
+                padding: 15px;
+                border-radius: 8px;
             }
             
             .logo {
-                width: 150px;
-                height: 50px;
+                width: 90px;
+                height: 35px;
             }
             
             h1 {
@@ -154,16 +345,39 @@
             }
             
             .description {
-                font-size: 14px;
+                font-size: 13px;
             }
             
-            .results-button {
-                font-size: 14px;
-                padding: 5px 10px;
+            .gold-button {
+                font-size: 13px;
+                padding: 6px 14px;
             }
             
             .form-container iframe {
                 min-height: 900px; /* Increased height for mobile phones */
+            }
+            
+            .feedback-button {
+                width: 35px;
+                height: 35px;
+                right: 10px;
+                bottom: 60px;
+            }
+            
+            .footer-center {
+                flex-direction: row;
+                flex-wrap: nowrap;
+                gap: 5px;
+                justify-content: center;
+                white-space: nowrap;
+            }
+            
+            .footer-left {
+                margin-left: 10px;
+            }
+            
+            .footer-text, .response-count-container {
+                font-size: 11px;
             }
         }
     </style>
@@ -171,32 +385,133 @@
 <body>
     <header>
         <div class="container">
-            <div class="logo-container">
-                <img src="https://view.unija.info/media/studentunija.png" alt="Unija Logo" class="logo">
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="https://view.unija.info/media/studentunija.png" alt="Unija Logo" class="logo">
+                </div>
+                <div class="header-text">
+                    <h1>UNIJARIAN SURVEY</h1>
+                    <p class="description">Sila jawab Google Form di bawah.</p>
+                </div>
             </div>
-            <h1>UNIJARIAN SURVEY</h1>
-            <p class="description">Sila jawab Google Form di bawah.</p>
         </div>
     </header>
+    
+    <div class="wave-divider"></div>
     
     <main>
         <div class="container">
             <section class="content-section">
+                <div class="form-links">
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLScvFOZVh2r8934mn88-F4R9WAtohzMlOCEAtmDZC0YxFnxCag/viewform" target="_blank" class="form-link">Click here to open the original Google Form</a>
+                </div>
+                
                 <div class="form-container">
-                    <!-- Replace this iframe src with your actual Google Form embed code -->
-                    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScvFOZVh2r8934mn88-F4R9WAtohzMlOCEAtmDZC0YxFnxCag/viewform?embedded=true" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+                    <div class="loading-spinner" id="loadingSpinner"></div>
+                    <!-- Google Form embed code -->
+                    <iframe id="formFrame" src="https://docs.google.com/forms/d/e/1FAIpQLScvFOZVh2r8934mn88-F4R9WAtohzMlOCEAtmDZC0YxFnxCag/viewform?embedded=true" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
                 </div>
             </section>
         </div>
     </main>
     
+    <a href="https://t.me/Unija_minbot" class="feedback-button" target="_blank">
+        <span class="feedback-icon">💬</span>
+    </a>
+    
     <footer>
-        <div class="container">
-            <p>&copy; 2025 unija.info</p>
-            <div class="button-container">
-                <a href="https://view.unija.info/data/unijarian-feedback.html" class="results-button">See the overall results</a>
+        <div class="footer-left">
+            <p class="footer-text">&copy; 2025 unija.info</p>
+        </div>
+        <div class="footer-center">
+            <p class="footer-text">Want to see results? <a href="https://view.unija.info/data/unijarian-feedback.html" class="footer-link">Click here</a></p>
+            <div class="response-count-container">
+                <span id="responseCount" class="response-count">0</span> participants
             </div>
         </div>
     </footer>
+
+    <script>
+        // Loading spinner
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const formFrame = document.getElementById('formFrame');
+        
+        formFrame.onload = function() {
+            loadingSpinner.style.display = 'none';
+        };
+        
+        // Fetch response count from Google Sheets CSV
+        async function fetchResponseCount() {
+            // Replace with your Google Sheet CSV URL
+            const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSmbqzj4PEDzCeremuqIQsOZLDTK0RgMcVQ5OAedEQ8RKYSg7eXl52QO0HyrNW-JWZ8rZudXQBqLGPR/pub?gid=609743275&single=true&output=csv';
+            
+            try {
+                const response = await fetch(csvUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const dataText = await response.text();
+                const rows = dataText.trim().split('\n');
+                
+                // Count rows (excluding header)
+                const responseCount = rows.length - 1;
+                
+                // Animate the counter
+                animateCounter(responseCount);
+            } catch (error) {
+                console.error('Error fetching response count:', error);
+                document.getElementById('responseCount').textContent = '?';
+            }
+        }
+        
+        function animateCounter(targetValue) {
+            const counterElement = document.getElementById('responseCount');
+            
+            // Clear any existing content
+            counterElement.innerHTML = '';
+            
+            // Convert target value to string for digit-by-digit animation
+            const targetValueStr = targetValue.toString();
+            
+            // Create a digit container and strip for each digit
+            for (let i = 0; i < targetValueStr.length; i++) {
+                const digitContainer = document.createElement('div');
+                digitContainer.className = 'digit-container';
+                
+                const digitStrip = document.createElement('div');
+                digitStrip.className = 'digit-strip';
+                
+                // Create digits 0-9 for the strip
+                for (let j = 0; j <= 9; j++) {
+                    const digit = document.createElement('div');
+                    digit.className = 'digit';
+                    digit.textContent = j;
+                    digitStrip.appendChild(digit);
+                }
+                
+                // Add the final target digit
+                const finalDigit = document.createElement('div');
+                finalDigit.className = 'digit';
+                finalDigit.textContent = targetValueStr[i];
+                digitStrip.appendChild(finalDigit);
+                
+                digitContainer.appendChild(digitStrip);
+                counterElement.appendChild(digitContainer);
+                
+                // Set initial position (at 0)
+                digitStrip.style.transform = 'translateY(0px)';
+                
+                // Animate after a delay based on position (rightmost digits animate first)
+                setTimeout(() => {
+                    const finalDigitValue = parseInt(targetValueStr[i]);
+                    const finalPosition = -finalDigitValue * 20; // Adjusted height for smaller counter
+                    digitStrip.style.transform = `translateY(${finalPosition}px)`;
+                }, (targetValueStr.length - i - 1) * 200);
+            }
+        }
+        
+        // Initialize the counter and fetch data
+        document.addEventListener('DOMContentLoaded', fetchResponseCount);
+    </script>
 </body>
 </html>
