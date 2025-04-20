@@ -1,9 +1,16 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unija Form</title>
+    <link rel="icon" type="image/svg+xml" href="https://view.unija.info/media/logo/favicon.svg" />
+    <!-- Open Graph Meta Tags (for Facebook, LinkedIn, etc.) -->
+    <meta property="og:title" content="UNIJARIAN SURVEY" />
+    <meta property="og:description" content="Info tentang projek multimedia yang dibangunkan untuk kegunaan umum" />
+    <meta property="og:image" content="https://view.unija.info/media/link-preview/unjsurvey1.png" />
+    <meta property="og:url" content="https://view.unija.info/form/unijarian-survey.html" />
+    <meta property="og:type" content="website" />
     <style>
         /* Root variables for new color scheme */
         :root {
@@ -443,7 +450,7 @@
         // Fetch response count from Google Sheets CSV
         async function fetchResponseCount() {
             // Replace with your Google Sheet CSV URL
-            const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSmbqzj4PEDzCeremuqIQsOZLDTK0RgMcVQ5OAedEQ8RKYSg7eXl52QO0HyrNW-JWZ8rZudXQBqLGPR/pub?gid=609743275&single=true&output=csv';
+            const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTlnyIEkGDYY5XNctR7cETthzyanOGk5A_iDCdW-0HNPZX6vA_UFAYDTeOgPobKFWQIgrn-TR5b4xiW/pub?gid=1828821692&single=true&output=csv';
             
             try {
                 const response = await fetch(csvUrl);
