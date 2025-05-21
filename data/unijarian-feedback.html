@@ -186,6 +186,7 @@
       height: 100px;
       overflow: hidden;
       width: 0.6em;
+      min-width: 43px; /* Ensure minimum width for digits */
     }
     .digit-strip {
       position: absolute;
@@ -210,6 +211,15 @@
       .counter-display {
         font-size: 60px;
       }
+      .digit-container {
+        width: 0.7em;
+        min-width: 36px;
+      }
+      .digit {
+        font-size: 60px;
+        height: 80px;
+        line-height: 80px;
+      }
     }
     @media (max-width: 600px) {
       .dashboard-title {
@@ -230,6 +240,18 @@
       
       .counter-display {
         font-size: 50px;
+      }
+      
+      .digit-container {
+        width: 0.8em;
+        min-width: 30px;
+        height: 70px;
+      }
+      
+      .digit {
+        font-size: 50px;
+        height: 70px;
+        line-height: 70px;
       }
       
       .footer-content {
@@ -288,11 +310,36 @@
   </div>
   
   <script>
-    // Google Sheet CSV URL - replace with your actual URL
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTlnyIEkGDYY5XNctR7cETthzyanOGk5A_iDCdW-0HNPZX6vA_UFAYDTeOgPobKFWQIgrn-TR5b4xiW/pub?gid=1828821692&single=true&output=csv';
+    // Updated Google Sheet CSV URL to fetch response count from cell A2
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTlnyIEkGDYY5XNctR7cETthzyanOGk5A_iDCdW-0HNPZX6vA_UFAYDTeOgPobKFWQIgrn-TR5b4xiW/pub?gid=1528781561&single=true&output=csv';
     
     // Target for responses
     const TARGET_RESPONSES = 200;
+    
+    // Function to parse CSV text into array
+    function parseCSV(csvText) {
+      const lines = csvText.trim().split('\n');
+      return lines.map(line => {
+        // Simple CSV parsing - handles basic cases
+        const cells = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            cells.push(current.trim());
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        cells.push(current.trim());
+        return cells;
+      });
+    }
     
     // Fetch and process data
     async function fetchData() {
@@ -302,10 +349,16 @@
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const dataText = await response.text();
-        const rows = dataText.trim().split('\n');
+        const rows = parseCSV(dataText);
         
-        // Count rows (excluding header)
-        const responseCount = rows.length - 1;
+        // Get value from cell A2 (row index 1, column index 0)
+        let responseCount = 0;
+        if (rows.length > 1 && rows[1].length > 0) {
+          const cellValue = rows[1][0];
+          // Parse the number, removing any non-numeric characters except digits
+          const numericValue = parseInt(cellValue.replace(/[^\d]/g, ''));
+          responseCount = isNaN(numericValue) ? 0 : numericValue;
+        }
         
         // Calculate percentage
         const percentage = Math.min(Math.round((responseCount / TARGET_RESPONSES) * 100), 100);
@@ -319,6 +372,9 @@
         
         // Update progress bar
         updateProgressBar(percentage);
+        
+        console.log(`Response count from A2: ${responseCount}`);
+        
       } catch (error) {
         console.error('Error fetching or processing data:', error);
         document.getElementById('data-summary').textContent = 'Ralat semasa memuat data';
@@ -366,7 +422,7 @@
         // Animate after a delay based on position (rightmost digits animate first)
         setTimeout(() => {
           const finalDigitValue = parseInt(targetValueStr[i]);
-          const finalPosition = -finalDigitValue * 100;
+          const finalPosition = -finalDigitValue * parseInt(getComputedStyle(digitContainer).height);
           digitStrip.style.transform = `translateY(${finalPosition}px)`;
         }, (targetValueStr.length - i - 1) * 200);
       }
