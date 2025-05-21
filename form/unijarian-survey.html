@@ -374,17 +374,26 @@
             .footer-center {
                 flex-direction: row;
                 flex-wrap: nowrap;
-                gap: 5px;
+                gap: 8px; /* Increased gap */
                 justify-content: center;
                 white-space: nowrap;
+                padding: 0 5px; /* Add padding to prevent edge clipping */
             }
             
             .footer-left {
-                margin-left: 10px;
+                margin-left: 5px; /* Reduced margin */
             }
             
-            .footer-text, .response-count-container {
+            .footer-text {
                 font-size: 11px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .response-count-container {
+                font-size: 11px;
+                white-space: nowrap;
+                overflow: visible; /* Ensure counter is visible */
             }
         }
     </style>
@@ -534,7 +543,10 @@
                 // Animate after a delay based on position (rightmost digits animate first)
                 setTimeout(() => {
                     const finalDigitValue = parseInt(targetValueStr[i]);
-                    const finalPosition = -finalDigitValue * 20; // Adjusted height for smaller counter
+                    // Use mobile-specific height adjustment
+                    const isMobile = window.innerWidth <= 480;
+                    const digitHeight = isMobile ? 18 : 20;
+                    const finalPosition = -finalDigitValue * digitHeight;
                     digitStrip.style.transform = `translateY(${finalPosition}px)`;
                 }, (targetValueStr.length - i - 1) * 200);
             }
