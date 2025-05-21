@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -447,10 +447,10 @@
             loadingSpinner.style.display = 'none';
         };
         
-        // Fetch response count from Google Sheets CSV
+        // Fetch response count from Google Sheets CSV - specifically from cell A2
         async function fetchResponseCount() {
-            // Replace with your Google Sheet CSV URL
-            const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTlnyIEkGDYY5XNctR7cETthzyanOGk5A_iDCdW-0HNPZX6vA_UFAYDTeOgPobKFWQIgrn-TR5b4xiW/pub?gid=1828821692&single=true&output=csv';
+            // Updated CSV URL pointing to the new sheet
+            const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTlnyIEkGDYY5XNctR7cETthzyanOGk5A_iDCdW-0HNPZX6vA_UFAYDTeOgPobKFWQIgrn-TR5b4xiW/pub?gid=1528781561&single=true&output=csv';
             
             try {
                 const response = await fetch(csvUrl);
@@ -458,13 +458,36 @@
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const dataText = await response.text();
+                
+                // Split the CSV into rows
                 const rows = dataText.trim().split('\n');
                 
-                // Count rows (excluding header)
-                const responseCount = rows.length - 1;
-                
-                // Animate the counter
-                animateCounter(responseCount);
+                // Parse the second row (index 1) to get A2 value
+                if (rows.length >= 2) {
+                    // Split the second row by comma to get individual cells
+                    const secondRowCells = rows[1].split(',');
+                    
+                    // Get the first cell (A2) and clean it up
+                    let responseCount = secondRowCells[0];
+                    
+                    // Remove any quotes and trim whitespace
+                    responseCount = responseCount.replace(/"/g, '').trim();
+                    
+                    // Convert to number
+                    const count = parseInt(responseCount);
+                    
+                    // Validate that it's a valid number
+                    if (!isNaN(count) && count >= 0) {
+                        console.log('Response count from A2:', count);
+                        animateCounter(count);
+                    } else {
+                        console.error('Invalid number in A2:', responseCount);
+                        document.getElementById('responseCount').textContent = '?';
+                    }
+                } else {
+                    console.error('Not enough rows in CSV data');
+                    document.getElementById('responseCount').textContent = '?';
+                }
             } catch (error) {
                 console.error('Error fetching response count:', error);
                 document.getElementById('responseCount').textContent = '?';
